@@ -83,25 +83,20 @@
   }
 }
 
-/* Page Transitions */
+/* Page Transitions - Snappy and Fast */
 .page-fade-enter-active,
 .page-fade-leave-active {
-  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.12s ease;
 }
 
-.page-fade-enter-from {
-  opacity: 0;
-  transform: translateY(8px);
-}
-
+.page-fade-enter-from,
 .page-fade-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
 }
 
 /* Component entrance */
 .animate-fade-in {
-  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-scale-in {

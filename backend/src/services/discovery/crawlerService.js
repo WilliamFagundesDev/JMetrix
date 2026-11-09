@@ -5,6 +5,64 @@ import db from '../../database/db.js';
 
 export class CrawlerService {
   /**
+   * Intelligently decodes raw HTTP response buffers respecting charset headers or meta tags
+   */
+  static decodeResponseData(buffer, contentTypeHeader = '') {
+    if (!buffer || buffer.length === 0) return '';
+    if (typeof buffer === 'string') return buffer;
+
+    let charset = 'utf-8';
+    const ctMatch = contentTypeHeader.match(/charset=([a-zA-Z0-9_-]+)/i);
+    if (ctMatch) {
+      charset = ctMatch[1].toLowerCase();
+    } else {
+      const preview = Buffer.from(buffer.slice(0, 2048)).toString('binary');
+      const metaMatch = preview.match(/<meta[^>]+charset=['"]?([a-zA-Z0-9_-]+)/i) ||
+                        preview.match(/content=['"][^'"]*charset=([a-zA-Z0-9_-]+)/i);
+      if (metaMatch) {
+        charset = metaMatch[1].toLowerCase();
+      }
+    }
+
+    if (charset === 'latin1' || charset === 'iso-8859-1' || charset === 'cp1252' || charset === 'ansi') {
+      charset = 'windows-1252';
+    }
+
+    try {
+      return new TextDecoder(charset, { fatal: charset === 'utf-8' }).decode(buffer);
+    } catch {
+      // If utf-8 failed with fatal byte error, fall back to windows-1252 (Latin-1)
+      try {
+        return new TextDecoder('windows-1252').decode(buffer);
+      } catch {
+        return Buffer.from(buffer).toString('utf-8');
+      }
+    }
+  }
+
+  /**
+   * Sanitizes page titles to eliminate replacement chars, CMS spam, and CSV-breaking characters
+   */
+  static sanitizeTitle(rawTitle, fallback = '') {
+    if (!rawTitle || typeof rawTitle !== 'string') return fallback;
+    let clean = rawTitle
+      .replace(/[\r\n\t]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .replace(/New Document/gi, '')
+      .replace(/Untitled Document/gi, '')
+      .replace(/["\\]/g, '')
+      .trim();
+
+    clean = clean.replace(/^[-\s|:;,]+|[-\s|:;,]+$/g, '');
+
+    if (!clean) return fallback;
+    if (clean.length > 70) {
+      clean = clean.substring(0, 67).trim() + '...';
+    }
+    return clean;
+  }
+
+  /**
    * Pre-flight connectivity check
    */
   static async checkConnectivity(targetUrl) {
@@ -15,6 +73,7 @@ export class CrawlerService {
       const response = await axios.get(validated.sanitizedUrl, {
         timeout: 8000,
         maxRedirects: 3,
+        responseType: 'arraybuffer',
         validateStatus: () => true, // accept all HTTP codes
         headers: {
           'User-Agent': 'JMETRIX-Performance-Agent/1.0 (+https://jmetrix.local)'
@@ -22,8 +81,10 @@ export class CrawlerService {
       });
 
       const latencyMs = Date.now() - startTime;
-      const $ = cheerio.load(response.data || '');
-      const title = $('title').text().trim() || 'Sem título';
+      const htmlText = this.decodeResponseData(response.data, response.headers['content-type'] || '');
+      const $ = cheerio.load(htmlText || '');
+      const rawTitle = $('title').text().trim() || 'Aplicação Alvo';
+      const title = this.sanitizeTitle(rawTitle, 'Aplicação Alvo');
 
       return {
         accessible: response.status >= 200 && response.status < 400,
@@ -109,6 +170,7 @@ export class CrawlerService {
         const response = await axios.get(normUrl, {
           timeout: 5000,
           maxRedirects: 2,
+          responseType: 'arraybuffer',
           validateStatus: () => true,
           headers: {
             'User-Agent': 'JMETRIX-Performance-Agent/1.0 (+https://jmetrix.local)'
@@ -131,8 +193,10 @@ export class CrawlerService {
         };
 
         if (isHtml && response.data) {
-          const $ = cheerio.load(response.data);
-          pageData.title = $('title').text().trim() || pageData.path;
+          const htmlText = this.decodeResponseData(response.data, contentType);
+          const $ = cheerio.load(htmlText || '');
+          const rawTitle = $('title').text().trim() || pageData.path;
+          pageData.title = this.sanitizeTitle(rawTitle, pageData.path);
 
           // Extract internal links if depth < maxDepth
           if (current.depth < maxDepth) {

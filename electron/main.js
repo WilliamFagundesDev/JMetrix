@@ -43,9 +43,23 @@ async function startBackendIfNeeded() {
   const backendEntry = path.join(rootDir, 'backend', 'src', 'server.js');
   const backendCwd = path.join(rootDir, 'backend');
 
-  backendProcess = spawn(process.execPath.includes('node') ? process.execPath : 'node', [backendEntry], {
+  // Use embedded Electron binary with ELECTRON_RUN_AS_NODE if packaged, or system 'node' in dev
+  const execCmd = app.isPackaged ? process.execPath : 'node';
+  const customEnv = {
+    ...process.env,
+    PORT: String(BACKEND_PORT),
+    STORAGE_DIR: app.isPackaged
+      ? path.join(app.getPath('userData'), 'storage')
+      : path.join(rootDir, 'backend', 'storage')
+  };
+
+  if (app.isPackaged) {
+    customEnv.ELECTRON_RUN_AS_NODE = '1';
+  }
+
+  backendProcess = spawn(execCmd, [backendEntry], {
     cwd: backendCwd,
-    env: { ...process.env, PORT: String(BACKEND_PORT) },
+    env: customEnv,
     stdio: 'inherit'
   });
 
@@ -73,6 +87,8 @@ async function startBackendIfNeeded() {
 }
 
 function createWindow() {
+  const iconPath = path.join(__dirname, 'icon.ico');
+
   mainWindow = new BrowserWindow({
     width: 1440,
     height: 900,
@@ -80,6 +96,7 @@ function createWindow() {
     minHeight: 720,
     title: 'JMETRIX — Test. Measure. Dominate.',
     backgroundColor: '#f8fafc',
+    icon: iconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       nodeIntegration: false,
@@ -135,6 +152,9 @@ app.on('will-quit', cleanup);
 
 // App Lifecycle
 app.whenReady().then(async () => {
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('com.jmetrix.app');
+  }
   await startBackendIfNeeded();
   createWindow();
 

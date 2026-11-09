@@ -126,6 +126,12 @@
                       <Eye :size="15" />
                     </button>
                   </router-link>
+                  <button class="action-btn text-cyan" @click="inspectJmxPlan(test)" title="Inspecionar Plano XML (.JMX)">
+                    <Code2 :size="15" />
+                  </button>
+                  <a :href="`/api/reports/${test.id}/jmx`" target="_blank" class="action-btn text-blue" title="Baixar Plano .JMX">
+                    <Download :size="15" />
+                  </a>
                   <button class="action-btn text-red" @click="confirmDelete(test)" title="Excluir">
                     <Trash2 :size="15" />
                   </button>
@@ -165,6 +171,7 @@ import { useRouter } from 'vue-router';
 import { useApi } from '../composables/useApi.js';
 import { useToast } from '../composables/useToast.js';
 import { useI18n } from '../composables/useI18n.js';
+import { useJMetrixStore } from '../composables/useJMetrixStore.js';
 import StatusBadge from '../components/common/StatusBadge.vue';
 import BaseButton from '../components/common/BaseButton.vue';
 import BaseModal from '../components/common/BaseModal.vue';
@@ -173,16 +180,20 @@ import {
   Search,
   GitCompare,
   Eye,
-  Trash2
+  Trash2,
+  Code2,
+  Download
 } from 'lucide-vue-next';
 
 const router = useRouter();
 const api = useApi();
 const toast = useToast();
 const { t, locale } = useI18n();
+const { state: storeState, inspectJmxPlan } = useJMetrixStore();
 
-const loading = ref(true);
-const tests = ref([]);
+// Pre-fill instantly with cached store data
+const tests = ref(storeState.tests || []);
+const loading = ref(!storeState.tests || storeState.tests.length === 0);
 const selectedTests = ref([]);
 
 const filters = ref({
@@ -205,16 +216,22 @@ function debounceSearch() {
 
 async function loadTests() {
   try {
-    loading.value = true;
+    if (!tests.value.length) {
+      loading.value = true;
+    }
     const query = new URLSearchParams();
     if (filters.value.search) query.append('search', filters.value.search);
     if (filters.value.testType) query.append('testType', filters.value.testType);
     if (filters.value.status) query.append('status', filters.value.status);
 
     const res = await api.get(`/tests?${query.toString()}`);
-    tests.value = res.items || [];
+    const items = res.items || [];
+    tests.value = items;
+    if (!filters.value.search && !filters.value.testType && !filters.value.status) {
+      storeState.tests = items;
+    }
   } catch (err) {
-    toast.error('Erro ao carregar testes', err.message);
+    console.error('Erro ao carregar testes', err);
   } finally {
     loading.value = false;
   }

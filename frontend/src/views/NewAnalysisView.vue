@@ -45,11 +45,14 @@
 
     <!-- ETAPA 1: Informar o Endereço -->
     <div v-if="currentStep === 1" class="step-content j-card animate-fade-in">
-      <div class="step-intro">
-        <h2 class="step-title">{{ t('newAnalysis.titleStep1') }}</h2>
-        <p class="step-subtitle">
-          {{ t('newAnalysis.subtitleStep1') }}
-        </p>
+      <div class="step-intro flex-between-intro">
+        <div>
+          <h2 class="step-title">{{ t('newAnalysis.titleStep1') }}</h2>
+          <p class="step-subtitle">
+            {{ t('newAnalysis.subtitleStep1') }}
+          </p>
+        </div>
+        <JmxLogo size="sm" :withText="true" subtitle="Motor Apache JMeter 5.6.3" />
       </div>
 
       <div class="url-input-container">
@@ -227,11 +230,17 @@
 
     <!-- ETAPA 3: Configuração dos Testes -->
     <div v-if="currentStep === 3" class="step-content j-card animate-fade-in">
-      <div class="step-intro">
-        <h2 class="step-title">{{ t('newAnalysis.titleStep3') }}</h2>
-        <p class="step-subtitle">
-          {{ t('newAnalysis.subtitleStep3') }}
-        </p>
+      <div class="step-intro flex-between-intro">
+        <div>
+          <h2 class="step-title">{{ t('newAnalysis.titleStep3') }}</h2>
+          <p class="step-subtitle">
+            {{ t('newAnalysis.subtitleStep3') }}
+          </p>
+        </div>
+        <button class="btn-guide-helper" @click="openJmeterGuide" type="button">
+          <BookOpen :size="15" />
+          <span>Dúvidas? Guia das Modalidades</span>
+        </button>
       </div>
 
       <!-- Test Types Cards -->
@@ -377,7 +386,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useApi } from '../composables/useApi.js';
 import { useWebSocket } from '../composables/useWebSocket.js';
 import { useToast } from '../composables/useToast.js';
@@ -385,6 +394,8 @@ import { useI18n } from '../composables/useI18n.js';
 import BaseButton from '../components/common/BaseButton.vue';
 import BaseModal from '../components/common/BaseModal.vue';
 import LiveEngineWidget from '../components/common/LiveEngineWidget.vue';
+import JmxLogo from '../components/common/JmxLogo.vue';
+import { useJMetrixStore } from '../composables/useJMetrixStore.js';
 import {
   Globe,
   Search,
@@ -397,13 +408,16 @@ import {
   Flame,
   Activity,
   TrendingUp,
-  Clock
+  Clock,
+  BookOpen
 } from 'lucide-vue-next';
 
 const router = useRouter();
+const route = useRoute();
 const api = useApi();
 const toast = useToast();
 const { t } = useI18n();
+const { openJmeterGuide } = useJMetrixStore();
 const { subscribe, subscribeTest } = useWebSocket();
 
 const currentStep = ref(1);
@@ -650,6 +664,12 @@ async function cancelExecution() {
 }
 
 onMounted(async () => {
+  const incomingUrl = route.query.target || route.query.url;
+  if (incomingUrl) {
+    targetUrl.value = decodeURIComponent(incomingUrl);
+    validateUrl();
+  }
+
   try {
     const s = await api.get('/settings');
     if (s.settings?.max_vus) maxAllowedVus.value = parseInt(s.settings.max_vus, 10);
@@ -684,6 +704,34 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.flex-between-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-guide-helper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1px dashed rgba(0, 240, 255, 0.4);
+  color: #00f0ff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-guide-helper:hover {
+  background: rgba(0, 240, 255, 0.1);
+  border-color: #00f0ff;
 }
 
 /* Stepper Header */

@@ -67,9 +67,17 @@
               <td><StatusBadge :status="t.status" /></td>
               <td class="date-cell">{{ formatDate(t.created_at) }}</td>
               <td style="text-align: right;">
-                <router-link :to="`/test/${t.id}`">
-                  <BaseButton size="sm" variant="outline">{{ t('testResults.thActions') }}</BaseButton>
-                </router-link>
+                <div style="display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
+                  <button class="action-btn text-cyan" @click="inspectJmxPlan(t)" title="Inspecionar Plano JMX (XML)">
+                    <Code2 :size="15" />
+                  </button>
+                  <a :href="`/api/reports/${t.id}/jmx`" target="_blank" class="action-btn text-blue" title="Baixar Plano .JMX">
+                    <Download :size="15" />
+                  </a>
+                  <router-link :to="`/test/${t.id}`">
+                    <BaseButton size="sm" variant="outline">{{ t('testResults.thActions') }}</BaseButton>
+                  </router-link>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -87,12 +95,14 @@ import { useToast } from '../composables/useToast.js';
 import { useI18n } from '../composables/useI18n.js';
 import BaseButton from '../components/common/BaseButton.vue';
 import StatusBadge from '../components/common/StatusBadge.vue';
-import { Globe, Zap } from 'lucide-vue-next';
+import { useJMetrixStore } from '../composables/useJMetrixStore.js';
+import { Globe, Zap, Code2, Download } from 'lucide-vue-next';
 
 const route = useRoute();
 const api = useApi();
 const toast = useToast();
 const { t, locale } = useI18n();
+const { inspectJmxPlan } = useJMetrixStore();
 
 const site = ref(null);
 

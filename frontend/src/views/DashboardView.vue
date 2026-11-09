@@ -4,7 +4,7 @@
     <div v-if="overview.totalTests === 0 && !loading" class="onboarding-hero glass-panel">
       <div class="onboarding-content">
         <div class="hero-badge">
-          <Sparkles :size="14" />
+          <JmxLogo size="sm" :withText="false" />
           <span>{{ t('dashboard.welcomeBadge') }}</span>
         </div>
         <h2 class="hero-title">{{ t('dashboard.welcomeTitle') }}</h2>
@@ -18,6 +18,10 @@
               {{ t('dashboard.btnStartFirst') }}
             </BaseButton>
           </router-link>
+          <BaseButton variant="secondary" size="lg" @click="openJmeterGuide">
+            <template #icon><BookOpen :size="16" /></template>
+            Guia & Dicionário JMeter
+          </BaseButton>
           <router-link to="/settings">
             <BaseButton variant="secondary" size="lg">
               <template #icon><Sliders :size="16" /></template>
@@ -194,8 +198,10 @@
         <!-- Top Performing Sites -->
         <div class="ranking-card j-card">
           <div class="card-header">
-            <h3 class="card-title text-green">{{ t('dashboard.topSitesTitle') }}</h3>
-            <span class="card-subtitle">{{ t('dashboard.topSitesSub') }}</span>
+            <div class="card-title-group">
+              <h3 class="card-title text-green">{{ t('dashboard.topSitesTitle') }}</h3>
+              <span class="card-subtitle">{{ t('dashboard.topSitesSub') }}</span>
+            </div>
           </div>
 
           <div v-if="!overview.topSites?.length" class="empty-box">
@@ -218,8 +224,10 @@
         <!-- Problematic Sites -->
         <div class="ranking-card j-card">
           <div class="card-header">
-            <h3 class="card-title text-amber">{{ t('dashboard.problematicSitesTitle') }}</h3>
-            <span class="card-subtitle">{{ t('dashboard.problematicSitesSub') }}</span>
+            <div class="card-title-group">
+              <h3 class="card-title text-amber">{{ t('dashboard.problematicSitesTitle') }}</h3>
+              <span class="card-subtitle">{{ t('dashboard.problematicSitesSub') }}</span>
+            </div>
           </div>
 
           <div v-if="!overview.problematicSites?.length" class="empty-box">
@@ -250,11 +258,13 @@ import { useWebSocket } from '../composables/useWebSocket.js';
 import { useToast } from '../composables/useToast.js';
 import { useTheme } from '../composables/useTheme.js';
 import { useI18n } from '../composables/useI18n.js';
+import { useJMetrixStore } from '../composables/useJMetrixStore.js';
 import MetricCard from '../components/common/MetricCard.vue';
 import StatusBadge from '../components/common/StatusBadge.vue';
 import BaseButton from '../components/common/BaseButton.vue';
 import BaseChart from '../components/charts/BaseChart.vue';
 import LiveEngineWidget from '../components/common/LiveEngineWidget.vue';
+import JmxLogo from '../components/common/JmxLogo.vue';
 import {
   Activity,
   Globe,
@@ -264,7 +274,8 @@ import {
   Zap,
   Sliders,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  BookOpen
 } from 'lucide-vue-next';
 
 const api = useApi();
@@ -272,9 +283,12 @@ const toast = useToast();
 const { theme } = useTheme();
 const { t } = useI18n();
 const { subscribe } = useWebSocket();
+const { state: storeState, openJmeterGuide } = useJMetrixStore();
 
-const loading = ref(true);
-const overview = ref({
+// Pre-fill instantly from store memory if available
+const hasInitialData = Boolean(storeState.overview && (storeState.overview.totalTests > 0 || storeState.overview.recentTests?.length > 0));
+const loading = ref(!hasInitialData);
+const overview = ref(hasInitialData ? { ...storeState.overview } : {
   totalTests: 0,
   totalSites: 0,
   totalRequests: 0,
@@ -291,11 +305,14 @@ const liveTelemetry = ref({});
 
 async function loadDashboard() {
   try {
-    loading.value = true;
+    if (!overview.value.totalTests && !overview.value.recentTests?.length) {
+      loading.value = true;
+    }
     const data = await api.get('/dashboard/overview');
     overview.value = data;
+    storeState.overview = data;
   } catch (err) {
-    toast.error('Falha ao carregar dashboard', err.message);
+    console.error('Falha ao carregar dashboard', err);
   } finally {
     loading.value = false;
   }
@@ -453,12 +470,21 @@ onMounted(() => {
 /* Onboarding Hero */
 .onboarding-hero {
   border-radius: 16px;
-  padding: 32px;
+  padding: 28px 32px;
   display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: 32px;
+  grid-template-columns: 1fr minmax(280px, 420px);
+  gap: 28px;
   align-items: center;
   box-shadow: var(--shadow-md);
+  min-width: 0;
+}
+
+.onboarding-content {
+  min-width: 0;
+}
+
+.hero-graphic {
+  min-width: 0;
 }
 
 .hero-badge {
@@ -476,41 +502,44 @@ onMounted(() => {
 }
 
 .hero-title {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
   color: var(--text-main);
   letter-spacing: -0.5px;
-  line-height: 1.25;
+  line-height: 1.3;
   margin-bottom: 12px;
+  word-break: break-word;
 }
 
 .hero-desc {
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--text-muted);
   line-height: 1.6;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .hero-actions {
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .engine-preview-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  background: #090d16;
+  border: 1px solid #1e293b;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+  width: 100%;
 }
 
 .preview-header {
-  background: var(--bg-surface-hover);
+  background: #0f172a;
   padding: 10px 14px;
   display: flex;
   align-items: center;
   gap: 8px;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid #1e293b;
 }
 
 .preview-dot {
@@ -524,27 +553,39 @@ onMounted(() => {
 
 .preview-title {
   font-size: 11px;
-  color: var(--text-muted);
+  color: #94a3b8;
   margin-left: 6px;
   font-family: var(--font-mono);
   font-weight: 600;
 }
 
 .preview-code {
-  padding: 18px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
   font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--electric-blue);
+  font-size: 11.5px;
+  color: #38bdf8;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.preview-code code {
+  line-height: 1.4;
 }
 
 /* Metrics Grid */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
+}
+
+@media (min-width: 1240px) {
+  .metrics-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
 }
 
 /* Charts Row */
@@ -564,6 +605,13 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.card-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
 }
 
 .card-title {
@@ -589,8 +637,9 @@ onMounted(() => {
 /* Bottom Grid */
 .dashboard-bottom-grid {
   display: grid;
-  grid-template-columns: 1.6fr 1fr;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1.2fr);
   gap: 20px;
+  min-width: 0;
 }
 
 .table-responsive {
@@ -673,6 +722,7 @@ onMounted(() => {
   border: 1px solid var(--border-subtle);
   border-radius: 10px;
   transition: all var(--transition-fast);
+  gap: 12px;
 }
 
 .ranking-item:hover {
@@ -682,23 +732,32 @@ onMounted(() => {
 .ranking-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  flex: 1;
 }
 
 .ranking-name {
   font-size: 13.5px;
   font-weight: 700;
   color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ranking-url {
   font-size: 11px;
   color: var(--text-subtle);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ranking-stat {
   text-align: right;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .ranking-metric {
@@ -718,12 +777,17 @@ onMounted(() => {
   font-size: 13px;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .onboarding-hero {
     grid-template-columns: 1fr;
   }
-  .charts-row,
   .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .charts-row {
     grid-template-columns: 1fr;
   }
 }

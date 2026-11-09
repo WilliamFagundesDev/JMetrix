@@ -16,6 +16,34 @@ export class JTLParser {
   }
 
   /**
+   * RFC 4180 compliant CSV line parser respecting quoted values and commas
+   */
+  static parseCsvLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i++; // Skip escaped quote
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        result.push(current);
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current);
+    return result;
+  }
+
+  /**
    * Parse JTL file and compute comprehensive performance metrics
    */
   static async parseJtl(filePath, options = {}) {
@@ -39,9 +67,9 @@ export class JTLParser {
     for await (const line of rl) {
       if (!line.trim()) continue;
 
-      const cols = line.split(',');
+      const cols = this.parseCsvLine(line);
       if (!header) {
-        header = cols.map(c => c.trim());
+        header = cols.map(c => c.trim().replace(/^["'\s]+|["'\s]+$/g, ''));
         header.forEach((name, idx) => {
           colIndex[name] = idx;
         });
@@ -51,14 +79,17 @@ export class JTLParser {
       // Read columns
       const timeStamp = parseInt(cols[colIndex['timeStamp']], 10) || 0;
       const elapsed = parseInt(cols[colIndex['elapsed']], 10) || 0;
-      const label = cols[colIndex['label']] || 'Sampler';
-      const responseCode = cols[colIndex['responseCode']] || '0';
+      const rawLabel = cols[colIndex['label']] || 'Sampler';
+      const label = rawLabel.replace(/^["'\s]+|["'\s]+$/g, '').trim();
+      const rawResponseCode = cols[colIndex['responseCode']] || '200';
+      const responseCode = String(rawResponseCode).replace(/^["'\s]+|["'\s]+$/g, '').trim();
       const successStr = cols[colIndex['success']] || 'false';
-      const success = successStr.trim().toLowerCase() === 'true';
+      const success = String(successStr).trim().toLowerCase() === 'true';
       const grpThreads = parseInt(cols[colIndex['grpThreads']] || cols[colIndex['allThreads']], 10) || 1;
       const bytes = parseInt(cols[colIndex['bytes']], 10) || 0;
       const latency = parseInt(cols[colIndex['Latency']], 10) || elapsed;
-      const url = cols[colIndex['URL']] || '';
+      const rawUrl = cols[colIndex['URL']] || '';
+      const url = String(rawUrl).replace(/^["'\s]+|["'\s]+$/g, '').trim();
 
       if (firstTimestamp === null || timeStamp < firstTimestamp) firstTimestamp = timeStamp;
       if (lastTimestamp === null || timeStamp > lastTimestamp) lastTimestamp = timeStamp;
@@ -204,6 +235,16 @@ export class JTLParser {
           maxStatusCount = count;
           predominantStatus = code;
         }
+      }
+
+      // Sanitize status code: extract 3-digit HTTP status or fallback gracefully
+      const httpCodeMatch = String(predominantStatus).match(/\b([1-5]\d\d)\b/);
+      if (httpCodeMatch) {
+        predominantStatus = httpCodeMatch[1];
+      } else if (epErrors === 0) {
+        predominantStatus = '200';
+      } else {
+        predominantStatus = String(predominantStatus).replace(/["\\]/g, '').trim().substring(0, 10) || 'ERR';
       }
 
       return {

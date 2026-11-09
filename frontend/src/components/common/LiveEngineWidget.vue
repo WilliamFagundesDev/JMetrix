@@ -2,12 +2,12 @@
   <div class="live-engine-widget glass-panel">
     <div class="engine-top">
       <div class="engine-header">
-        <div class="pulse-indicator">
-          <span class="pulse-core"></span>
-          <span class="pulse-wave"></span>
-        </div>
+        <JmxLogo size="sm" :withText="false" />
         <div>
-          <h3 class="engine-title">{{ t('engineWidget.runningTitle') }}</h3>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3 class="engine-title">{{ t('engineWidget.runningTitle') }}</h3>
+            <span class="jmx-telemetry-tag font-mono">JMX TELEMETRY</span>
+          </div>
           <p class="engine-subtitle">{{ testName }} &bull; {{ targetUrl }}</p>
         </div>
       </div>
@@ -73,6 +73,7 @@
 import { computed } from 'vue';
 import { useI18n } from '../../composables/useI18n.js';
 import BaseButton from './BaseButton.vue';
+import JmxLogo from './JmxLogo.vue';
 
 const { t } = useI18n();
 
@@ -150,6 +151,16 @@ const stageText = computed(() => {
   border-radius: 50%;
   border: 2px solid var(--cyan-accent);
   animation: pulseRing 1.8s infinite ease-out;
+}
+
+.jmx-telemetry-tag {
+  font-size: 10px;
+  font-weight: 800;
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  padding: 1px 6px;
+  border-radius: 4px;
 }
 
 .engine-title {

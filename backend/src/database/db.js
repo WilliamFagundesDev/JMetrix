@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const storageDir = path.resolve(__dirname, '../../storage');
+const storageDir = process.env.STORAGE_DIR || path.resolve(__dirname, '../../storage');
 if (!fs.existsSync(storageDir)) {
   fs.mkdirSync(storageDir, { recursive: true });
 }
@@ -84,8 +84,12 @@ export function initDatabase() {
   db.exec(schema);
 
   // Seed default settings if not exists
+  const defaultJMeter = process.platform === 'win32'
+    ? path.join(process.env.LOCALAPPDATA || '', 'Programs', 'apache-jmeter-5.6.3', 'bin', 'jmeter.bat')
+    : '/opt/apache-jmeter/bin/jmeter';
+
   const defaults = [
-    { key: 'jmeter_custom_path', value: 'C:\\Users\\willi\\AppData\Local\\Programs\\apache-jmeter-5.6.3\\bin\\jmeter.bat' },
+    { key: 'jmeter_custom_path', value: defaultJMeter },
     { key: 'max_vus', value: '500' },
     { key: 'max_duration_seconds', value: '1800' },
     { key: 'max_crawler_pages', value: '25' },
@@ -102,6 +106,12 @@ export function initDatabase() {
     if (!existing) {
       insertStmt.run(item.key, item.value);
     }
+  }
+
+  // Update stale path from original developer's machine if detected
+  const currentPath = checkStmt.get('jmeter_custom_path');
+  if (currentPath && (currentPath.value.includes('willi') || currentPath.value.includes('AppDataLocal'))) {
+    db.prepare('UPDATE settings SET value = ? WHERE key = ?').run(defaultJMeter, 'jmeter_custom_path');
   }
 }
 

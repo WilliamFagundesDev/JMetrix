@@ -11,7 +11,7 @@ import { broadcast } from '../../websocket/wsServer.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const storageDir = path.resolve(__dirname, '../../../storage');
+const storageDir = process.env.STORAGE_DIR || path.resolve(__dirname, '../../../storage');
 
 export class JMeterExecutor {
   // Map of active test processes: testId => { process, startTime, ... }

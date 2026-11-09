@@ -238,8 +238,28 @@ export class ExportService {
   <div class="container">
     <div class="header">
       <div class="brand">
-        <span class="brand-title">JMETRIX</span>
-        <span style="color: #64748b; font-size: 14px;">| Plataforma Inteligente de Testes de Performance</span>
+        <svg width="40" height="40" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="jmxHGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00f0ff" />
+              <stop offset="45%" stop-color="#2563eb" />
+              <stop offset="100%" stop-color="#7c3aed" />
+            </linearGradient>
+          </defs>
+          <path d="M60 6 L108 26 L108 80 L60 114 L12 80 L12 26 Z" fill="url(#jmxHGrad)" fill-opacity="0.18" stroke="url(#jmxHGrad)" stroke-width="3.5" stroke-linejoin="round"/>
+          <path d="M18 64 L36 64 L44 48 L54 82 L64 36 L74 68 L84 64 L102 64" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+          <path d="M32 40 L40 40 L40 68 C40 76 34 80 26 80 C21 80 18 78 18 78 L20 71 C20 71 23 73 26 73 C29 73 31 71 31 67 L31 40 Z" fill="#ffffff"/>
+          <path d="M44 40 L53 40 L60 58 L67 40 L76 40 L76 80 L68 80 L68 53 L62 67 L58 67 L52 53 L52 80 L44 80 Z" fill="#ffffff"/>
+          <path d="M80 40 L88 40 L95 56 L102 40 L110 40 L99 60 L110 80 L102 80 L95 64 L88 80 L80 80 L91 60 Z" fill="#ffffff"/>
+          <circle cx="60" cy="114" r="3.5" fill="#00f0ff"/>
+        </svg>
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="brand-title">JMETRIX</span>
+            <span style="font-size: 11px; font-weight: 800; color: #00f0ff; background: rgba(0,240,255,0.12); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(0,240,255,0.35); font-family: monospace;">JMX</span>
+          </div>
+          <div style="color: #64748b; font-size: 12px; margin-top: 2px;">Plataforma de Testes Apache JMeter &bull; Relat&oacute;rio Oficial</div>
+        </div>
       </div>
       <div>
         <button class="no-print" onclick="window.print()" style="background: #0055ff; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: 600;">Imprimir / Salvar PDF</button>

@@ -63,7 +63,17 @@ export class JMXBuilder {
     const samplersXml = targetEndpoints.map((ep, idx) => {
       const epPath = ep.path || '/';
       const epMethod = (ep.method || 'GET').toUpperCase();
-      const samplerName = this.escapeXml(ep.name || `Endpoint_${idx + 1}_${epPath}`);
+      const rawName = ep.name || `Endpoint_${idx + 1}_${epPath}`;
+      let safeName = String(rawName)
+        .replace(/[\r\n\t]+/g, ' ')
+        .replace(/["\\]/g, '')
+        .replace(/,/g, ' - ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (safeName.length > 70) {
+        safeName = safeName.substring(0, 67).trim() + '...';
+      }
+      const samplerName = this.escapeXml(safeName);
       const cleanPath = this.escapeXml(epPath);
 
       return `

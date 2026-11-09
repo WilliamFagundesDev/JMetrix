@@ -234,7 +234,8 @@ export class TestController {
    */
   static async compareTests(req, res) {
     try {
-      const { testIdA, testIdB } = req.query;
+      const testIdA = req.query.testIdA || req.query.testA || req.query.idA;
+      const testIdB = req.query.testIdB || req.query.testB || req.query.idB;
       if (!testIdA || !testIdB) {
         return res.status(400).json({ error: 'Dois IDs de teste (testIdA e testIdB) são obrigatórios para comparação.' });
       }

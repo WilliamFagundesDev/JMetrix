@@ -4,7 +4,7 @@
     <div class="env-card j-card">
       <div class="env-header">
         <div class="env-title-box">
-          <Server :size="22" class="text-cyan" />
+          <JmxLogo size="sm" :withText="false" />
           <div>
             <h3 class="card-title">{{ t('settings.envTitle') }}</h3>
             <span class="card-subtitle">{{ t('settings.envSub') }}</span>
@@ -173,6 +173,7 @@ import { useApi } from '../composables/useApi.js';
 import { useToast } from '../composables/useToast.js';
 import { useI18n } from '../composables/useI18n.js';
 import BaseButton from '../components/common/BaseButton.vue';
+import JmxLogo from '../components/common/JmxLogo.vue';
 import { Server, RefreshCw, Save } from 'lucide-vue-next';
 
 const api = useApi();

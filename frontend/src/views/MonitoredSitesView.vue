@@ -1,10 +1,13 @@
 <template>
   <div class="sites-view animate-fade-in">
-    <!-- Header with Add Site Action -->
+    <!-- Header with Add Site Action and JMX Logo -->
     <div class="sites-header j-card">
-      <div>
-        <h2 class="section-title">{{ t('sites.title') }}</h2>
-        <span class="section-subtitle">{{ t('sites.subtitle') }}</span>
+      <div class="header-brand-box">
+        <JmxLogo size="sm" :withText="false" />
+        <div>
+          <h2 class="section-title">{{ t('sites.title') }}</h2>
+          <span class="section-subtitle">{{ t('sites.subtitle') }}</span>
+        </div>
       </div>
       <BaseButton @click="isAddModalOpen = true">
         <template #icon><Plus :size="16" /></template>
@@ -68,9 +71,17 @@
           <span class="last-tested">
             {{ site.lastTestedAt ? `${t('sites.lastTest')}: ${formatDate(site.lastTestedAt)}` : t('sites.noTests') }}
           </span>
-          <router-link :to="`/sites/${site.id}`">
-            <BaseButton size="sm" variant="outline">{{ t('sites.btnHistory') }}</BaseButton>
-          </router-link>
+          <div class="footer-btns">
+            <router-link :to="`/new?url=${encodeURIComponent(site.url)}`">
+              <BaseButton size="sm" variant="primary">
+                <template #icon><Zap :size="13" /></template>
+                Testar
+              </BaseButton>
+            </router-link>
+            <router-link :to="`/sites/${site.id}`">
+              <BaseButton size="sm" variant="outline">{{ t('sites.btnHistory') }}</BaseButton>
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -146,17 +157,21 @@ import { ref, onMounted } from 'vue';
 import { useApi } from '../composables/useApi.js';
 import { useToast } from '../composables/useToast.js';
 import { useI18n } from '../composables/useI18n.js';
+import { useJMetrixStore } from '../composables/useJMetrixStore.js';
 import BaseButton from '../components/common/BaseButton.vue';
 import BaseModal from '../components/common/BaseModal.vue';
 import EmptyState from '../components/common/EmptyState.vue';
-import { Globe, Plus, Trash2 } from 'lucide-vue-next';
+import JmxLogo from '../components/common/JmxLogo.vue';
+import { Globe, Plus, Trash2, Zap } from 'lucide-vue-next';
 
 const api = useApi();
 const toast = useToast();
 const { t, locale } = useI18n();
+const { state: storeState } = useJMetrixStore();
 
-const loading = ref(true);
-const sites = ref([]);
+// Pre-fill instantly with cached store data
+const sites = ref(storeState.sites || []);
+const loading = ref(!storeState.sites || storeState.sites.length === 0);
 const isAddModalOpen = ref(false);
 const isSubmitting = ref(false);
 
@@ -172,11 +187,15 @@ const isDeleting = ref(false);
 
 async function loadSites() {
   try {
-    loading.value = true;
+    if (!sites.value.length) {
+      loading.value = true;
+    }
     const res = await api.get('/sites');
-    sites.value = res;
+    const items = Array.isArray(res) ? res : (res?.sites || []);
+    sites.value = items;
+    storeState.sites = items;
   } catch (err) {
-    toast.error('Erro ao carregar sites', err.message);
+    console.error('Erro ao carregar sites', err);
   } finally {
     loading.value = false;
   }
@@ -239,6 +258,18 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.header-brand-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.footer-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .section-title {

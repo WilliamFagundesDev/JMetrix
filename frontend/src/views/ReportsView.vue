@@ -1,10 +1,12 @@
 <template>
   <div class="reports-view animate-fade-in">
-    <!-- Reports Header Banner -->
+    <!-- Reports Header Banner with JMX Brand -->
     <div class="reports-header j-card">
-      <div>
-        <h2 class="section-title">{{ t('reports.title') }}</h2>
-        <span class="section-subtitle">{{ t('reports.subtitle') }}</span>
+      <div class="header-brand-box">
+        <JmxLogo size="md" :withText="true" subtitle="Central Oficial de Exportações e Artefatos do Apache JMeter" />
+      </div>
+      <div class="header-right-hint">
+        <span class="jmx-pill font-mono">ARTEFATOS: .JMX • .JTL • CSV • HTML • DASHBOARD</span>
       </div>
     </div>
 
@@ -37,7 +39,7 @@
               <th style="text-align: right;">{{ t('history.thThroughput') }}</th>
               <th style="text-align: right;">{{ t('history.thAvgTime') }}</th>
               <th style="text-align: right;">{{ t('history.thErrorRate') }}</th>
-              <th style="text-align: center;">Exportações Disponíveis</th>
+              <th style="text-align: center;">Artefatos e Exportações</th>
             </tr>
           </thead>
           <tbody>
@@ -55,25 +57,41 @@
               </td>
               <td style="text-align: center;">
                 <div class="export-actions-cell">
-                  <a :href="`/api/reports/${t.id}/csv`" target="_blank" class="export-pill" title="Baixar planilha CSV com amostras e percentis">
+                  <!-- JMX Plan Download -->
+                  <a :href="`/api/reports/${t.id}/jmx`" target="_blank" class="export-pill pill-jmx" title="Baixar Plano de Teste .JMX para JMeter">
+                    <Download :size="13" />
+                    <span>Plano .JMX</span>
+                  </a>
+
+                  <!-- JMX Plan In-App XML Inspector -->
+                  <button class="export-pill pill-inspect" @click="inspectJmxPlan(t)" title="Inspecionar XML do Plano JMeter">
+                    <Code2 :size="13" />
+                    <span>Ver XML</span>
+                  </button>
+
+                  <!-- Raw JTL Data Download -->
+                  <a :href="`/api/reports/${t.id}/jtl`" target="_blank" class="export-pill" title="Baixar log CSV de amostras brutas (.JTL)">
+                    <Download :size="13" />
+                    <span>Dados .JTL</span>
+                  </a>
+
+                  <!-- CSV Summary -->
+                  <a :href="`/api/reports/${t.id}/csv`" target="_blank" class="export-pill" title="Baixar planilha CSV consolidada">
                     <Download :size="13" />
                     <span>CSV</span>
                   </a>
 
-                  <a :href="`/api/reports/${t.id}/html`" target="_blank" class="export-pill" title="Visualizar Relatório HTML autônomo">
+                  <!-- HTML Standalone Report -->
+                  <a :href="`/api/reports/${t.id}/html`" target="_blank" class="export-pill pill-html" title="Visualizar Relatório HTML autônomo com logotipo JMX">
                     <FileCode :size="13" />
                     <span>HTML</span>
                   </a>
 
-                  <router-link :to="`/test/${t.id}`" class="export-pill" title="Visualizar Dashboard completo">
+                  <!-- Dashboard Link -->
+                  <router-link :to="`/test/${t.id}`" class="export-pill" title="Visualizar Dashboard completo de métricas">
                     <BarChart2 :size="13" />
-                    <span>Dashboard</span>
+                    <span>Painel</span>
                   </router-link>
-
-                  <a :href="`/api/reports/${t.id}/native`" target="_blank" class="export-pill" title="Abrir Dashboard Nativo Apache JMeter">
-                    <ExternalLink :size="13" />
-                    <span>JMeter</span>
-                  </a>
                 </div>
               </td>
             </tr>
@@ -89,24 +107,31 @@ import { ref, onMounted } from 'vue';
 import { useApi } from '../composables/useApi.js';
 import { useToast } from '../composables/useToast.js';
 import { useI18n } from '../composables/useI18n.js';
+import { useJMetrixStore } from '../composables/useJMetrixStore.js';
+import JmxLogo from '../components/common/JmxLogo.vue';
 import BaseButton from '../components/common/BaseButton.vue';
 import EmptyState from '../components/common/EmptyState.vue';
-import { Download, FileCode, ExternalLink, BarChart2 } from 'lucide-vue-next';
+import { Download, FileCode, ExternalLink, BarChart2, Code2 } from 'lucide-vue-next';
 
 const api = useApi();
 const toast = useToast();
 const { t, locale } = useI18n();
+const { state: storeState, inspectJmxPlan } = useJMetrixStore();
 
-const loading = ref(true);
-const tests = ref([]);
+// Pre-fill instantly with cached store data
+const completedTests = (storeState.tests || []).filter(t => t.status === 'completed');
+const tests = ref(completedTests);
+const loading = ref(!completedTests.length);
 
 async function loadReports() {
   try {
-    loading.value = true;
+    if (!tests.value.length) {
+      loading.value = true;
+    }
     const res = await api.get('/tests?status=completed');
     tests.value = res.items || [];
   } catch (err) {
-    toast.error('Erro ao carregar relatórios', err.message);
+    console.error('Erro ao carregar relatórios', err);
   } finally {
     loading.value = false;
   }
@@ -252,6 +277,47 @@ onMounted(() => {
 
 .j-table tr:hover td {
   background-color: var(--bg-surface);
+}
+
+.reports-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+}
+
+.header-brand-box {
+  display: flex;
+  align-items: center;
+}
+
+.jmx-pill {
+  font-size: 11px;
+  font-weight: 800;
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.pill-jmx {
+  background: rgba(0, 240, 255, 0.12) !important;
+  color: #00f0ff !important;
+  border: 1px solid rgba(0, 240, 255, 0.3) !important;
+}
+
+.pill-inspect {
+  background: rgba(124, 58, 237, 0.12) !important;
+  color: #a78bfa !important;
+  border: 1px solid rgba(124, 58, 237, 0.3) !important;
+  cursor: pointer;
+}
+
+.pill-html {
+  background: rgba(37, 99, 235, 0.12) !important;
+  color: #60a5fa !important;
 }
 
 .font-mono { font-family: var(--font-mono); }

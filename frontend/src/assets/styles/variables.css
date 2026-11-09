@@ -107,7 +107,7 @@
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* Layout */
-  --sidebar-width: 260px;
+  --sidebar-width: 268px;
   --sidebar-width-collapsed: 74px;
   --navbar-height: 68px;
 }

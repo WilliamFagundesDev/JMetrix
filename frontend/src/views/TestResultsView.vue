@@ -25,6 +25,21 @@
       </div>
 
       <div class="header-actions">
+        <BaseButton size="sm" variant="outline" @click="inspectJmxPlan(test)">
+          <template #icon><Code2 :size="14" /></template>
+          Inspecionar .JMX
+        </BaseButton>
+
+        <BaseButton size="sm" variant="outline" @click="goToCompare">
+          <template #icon><GitCompare :size="14" /></template>
+          Comparar
+        </BaseButton>
+
+        <a :href="`/api/reports/${test.id}/jmx`" target="_blank" class="btn-export-link" title="Baixar Plano JMeter .JMX">
+          <Download :size="14" />
+          <span>Plano .JMX</span>
+        </a>
+
         <BaseButton size="sm" variant="secondary" @click="downloadCsv">
           <template #icon><Download :size="14" /></template>
           {{ t('testResults.btnCsv') }}
@@ -239,10 +254,10 @@
               @click="openEndpointModal(ep)"
             >
               <td>
-                <span class="endpoint-name">{{ ep.endpoint }}</span>
+                <span class="endpoint-name">{{ (ep.endpoint || 'Endpoint').replace(/["\\]/g, '').trim() }}</span>
                 <span class="endpoint-url font-mono" v-if="ep.url">{{ ep.url }}</span>
               </td>
-              <td style="text-align: right;" class="font-mono">{{ ep.totalRequests.toLocaleString('pt-BR') }}</td>
+              <td style="text-align: right;" class="font-mono">{{ (ep.totalRequests || 0).toLocaleString('pt-BR') }}</td>
               <td style="text-align: right;" class="font-mono text-cyan">{{ ep.avgTime }} ms</td>
               <td style="text-align: right;" class="font-mono text-amber">{{ ep.p95 }} ms</td>
               <td style="text-align: right;" class="font-mono">{{ ep.throughput }} req/s</td>
@@ -250,7 +265,9 @@
                 {{ ep.errorRate }}%
               </td>
               <td style="text-align: center;">
-                <span class="badge badge-success">{{ ep.predominantStatus || '200' }}</span>
+                <span class="badge" :class="ep.errorRate > 0 ? 'badge-danger' : 'badge-success'">
+                  {{ ep.predominantStatus || '200' }}
+                </span>
               </td>
               <td style="text-align: right;">
                 <button class="btn-inspect" title="Inspecionar">
@@ -309,10 +326,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useApi } from '../composables/useApi.js';
 import { useToast } from '../composables/useToast.js';
 import { useI18n } from '../composables/useI18n.js';
+import { useJMetrixStore } from '../composables/useJMetrixStore.js';
 import MetricCard from '../components/common/MetricCard.vue';
 import StatusBadge from '../components/common/StatusBadge.vue';
 import BaseButton from '../components/common/BaseButton.vue';
@@ -335,13 +353,23 @@ import {
   TrendingUp,
   AlertCircle,
   Layers,
-  ChevronRight
+  ChevronRight,
+  Code2,
+  GitCompare
 } from 'lucide-vue-next';
 
 const route = useRoute();
+const router = useRouter();
 const api = useApi();
 const toast = useToast();
 const { t, locale } = useI18n();
+const { inspectJmxPlan } = useJMetrixStore();
+
+function goToCompare() {
+  if (test.value) {
+    router.push({ path: '/compare', query: { testIdA: test.value.id } });
+  }
+}
 
 const test = ref(null);
 const activeChartTab = ref('latency');
@@ -707,6 +735,27 @@ onMounted(() => {
   font-size: 13px;
   color: var(--text-main);
   font-weight: 600;
+}
+
+.btn-export-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.btn-export-link:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--electric-blue);
+  color: var(--electric-blue);
 }
 
 @media (max-width: 1024px) {
