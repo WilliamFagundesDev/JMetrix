@@ -1,0 +1,32 @@
+{
+  "name": "jmetrix",
+  "version": "1.0.0",
+  "description": "JMETRIX — Plataforma Inteligente de Testes de Performance. Test. Measure. Dominate.",
+  "main": "electron/main.js",
+  "type": "module",
+  "scripts": {
+    "start": "electron .",
+    "electron": "electron .",
+    "start:backend": "cd backend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "pack:win": "electron-packager . JMETRIX --platform=win32 --arch=x64 --out=dist-electron --overwrite --prune=false",
+    "build:app": "npm run build:frontend && npm run pack:win"
+  },
+  "keywords": [
+    "jmetrix",
+    "performance-testing",
+    "jmeter",
+    "vue3",
+    "echarts",
+    "load-testing",
+    "electron"
+  ],
+  "author": "JMETRIX Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^45.2.3"
+  }
+}
