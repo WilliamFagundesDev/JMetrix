@@ -450,18 +450,23 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
+  flex: 1;
 }
 
 .title-row {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .test-title {
   font-size: 20px;
   font-weight: 800;
   color: var(--text-main);
+  word-break: break-word;
 }
 
 .type-pill {
@@ -473,25 +478,29 @@ onMounted(() => {
   text-transform: uppercase;
   font-weight: 700;
   color: var(--electric-blue);
+  white-space: nowrap;
 }
 
 .meta-row {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
   font-size: 12.5px;
   color: var(--text-muted);
+  flex-wrap: wrap;
 }
 
 .meta-item {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
 .target-link {
   color: var(--text-main);
   font-weight: 600;
+  word-break: break-all;
 }
 
 .target-link:hover {
@@ -770,11 +779,26 @@ onMounted(() => {
 }
 
 @media (max-width: 1024px) {
+  .results-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
   .middle-grid {
     grid-template-columns: 1fr;
   }
   .percentile-items-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .percentile-items-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 </style>

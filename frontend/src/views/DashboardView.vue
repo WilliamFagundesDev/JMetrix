@@ -618,11 +618,15 @@ onMounted(() => {
   font-size: 15px;
   font-weight: 700;
   color: var(--text-main);
+  margin: 0;
+  line-height: 1.3;
 }
 
 .card-subtitle {
   font-size: 12px;
   color: var(--text-muted);
+  margin: 0;
+  line-height: 1.3;
 }
 
 .view-all-link {
@@ -777,7 +781,7 @@ onMounted(() => {
   font-size: 13px;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   .onboarding-hero {
     grid-template-columns: 1fr;
   }

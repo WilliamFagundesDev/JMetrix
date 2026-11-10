@@ -3,12 +3,16 @@
     <div class="engine-top">
       <div class="engine-header">
         <JmxLogo size="sm" :withText="false" />
-        <div>
-          <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="engine-header-info">
+          <div class="engine-title-row">
             <h3 class="engine-title">{{ t('engineWidget.runningTitle') }}</h3>
             <span class="jmx-telemetry-tag font-mono">JMX TELEMETRY</span>
           </div>
-          <p class="engine-subtitle">{{ testName }} &bull; {{ targetUrl }}</p>
+          <p class="engine-subtitle" :title="`${testName} • ${targetUrl}`">
+            <span class="subtitle-name">{{ testName }}</span>
+            <span class="subtitle-dot">&bull;</span>
+            <span class="subtitle-url">{{ targetUrl }}</span>
+          </p>
         </div>
       </div>
       <div class="engine-stage">
@@ -120,12 +124,31 @@ const stageText = computed(() => {
   justify-content: space-between;
   border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 16px;
+  gap: 16px;
+  min-width: 0;
 }
 
 .engine-header {
   display: flex;
   align-items: center;
   gap: 14px;
+  min-width: 0;
+  flex: 1;
+}
+
+.engine-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.engine-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .pulse-indicator {
@@ -161,28 +184,66 @@ const stageText = computed(() => {
   border: 1px solid rgba(0, 240, 255, 0.3);
   padding: 1px 6px;
   border-radius: 4px;
+  white-space: nowrap;
 }
 
 .engine-title {
   font-size: 16px;
   font-weight: 700;
   color: var(--text-main);
+  white-space: nowrap;
 }
 
 .engine-subtitle {
   font-size: 12px;
   color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.subtitle-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+.subtitle-dot {
+  flex-shrink: 0;
+}
+
+.subtitle-url {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.engine-stage {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .stage-tag {
   background: var(--info-bg);
   color: var(--cyan-accent);
   border: 1px solid rgba(2, 132, 199, 0.35);
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: 20px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.3px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1.3;
 }
 
 .telemetry-grid {
@@ -345,7 +406,23 @@ const stageText = computed(() => {
 }
 
 @media (max-width: 640px) {
+  .engine-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
   .telemetry-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .stats-col {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 440px) {
+  .stats-col {
     grid-template-columns: 1fr;
   }
 }

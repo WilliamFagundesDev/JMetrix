@@ -334,4 +334,23 @@ const pageSubtitle = computed(() => {
     padding: 7px 10px;
   }
 }
+
+@media (max-width: 768px) {
+  .j-navbar {
+    padding: 0 14px;
+  }
+  .jmx-header-pill {
+    display: none;
+  }
+  .lang-pill .lang-code {
+    display: none;
+  }
+  .btn-new-analysis span {
+    display: none;
+  }
+  .btn-new-analysis {
+    padding: 8px 10px;
+    border-radius: 8px;
+  }
+}
 </style>

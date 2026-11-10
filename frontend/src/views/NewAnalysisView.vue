@@ -931,7 +931,7 @@ onMounted(async () => {
 
 .preflight-details {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -1003,7 +1003,7 @@ onMounted(async () => {
 
 .discovery-metrics-bar {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 14px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -1272,6 +1272,25 @@ onMounted(async () => {
 @media (max-width: 900px) {
   .config-parameters-grid {
     grid-template-columns: 1fr;
+  }
+  .test-types-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .stepper-header {
+    padding: 14px 18px;
+  }
+  .step-desc {
+    display: none;
+  }
+  .step-separator {
+    margin: 0 10px;
+  }
+  .url-input-container {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 </style>

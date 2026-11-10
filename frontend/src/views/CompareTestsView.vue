@@ -430,16 +430,22 @@ onMounted(() => {
 
 .selectors-bar {
   display: grid;
-  grid-template-columns: 1fr 48px 1fr;
+  grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr);
   align-items: center;
   gap: 16px;
   padding: 16px 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .selector-col {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .selector-label {
@@ -449,9 +455,14 @@ onMounted(() => {
   font-size: 12px;
   font-weight: 600;
   color: var(--text-muted);
+  flex-wrap: wrap;
 }
 
 .test-select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 10px 14px;
   border-radius: 8px;
   background: var(--bg-surface);
@@ -461,6 +472,10 @@ onMounted(() => {
   font-weight: 600;
   outline: none;
   transition: all var(--transition-fast);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .test-select:focus {
@@ -481,6 +496,7 @@ onMounted(() => {
   font-size: 12px;
   color: var(--electric-blue);
   margin: 18px auto 0 auto;
+  flex-shrink: 0;
 }
 
 .empty-selection-card {
@@ -506,7 +522,7 @@ onMounted(() => {
 
 .tests-pair-banner {
   display: grid;
-  grid-template-columns: 1fr 64px 1fr;
+  grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
   gap: 16px;
   align-items: center;
 }
@@ -516,6 +532,8 @@ onMounted(() => {
   flex-direction: column;
   gap: 6px;
   padding: 18px 20px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .card-tag-row {
@@ -529,6 +547,9 @@ onMounted(() => {
   font-weight: 800;
   color: var(--text-main);
   margin: 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .t-meta {
@@ -661,15 +682,20 @@ onMounted(() => {
   color: var(--text-muted);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .selectors-bar {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
   .vs-badge-middle {
-    margin: 0 auto;
+    margin: 4px auto;
   }
   .tests-pair-banner {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .vs-circle {
+    margin: 4px auto;
   }
 }
 </style>

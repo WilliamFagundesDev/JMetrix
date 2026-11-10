@@ -445,4 +445,14 @@ onMounted(() => {
   border-radius: 50%;
   animation: spinSlow 0.8s linear infinite;
 }
+
+@media (max-width: 768px) {
+  .history-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-box {
+    min-width: 100%;
+  }
+}
 </style>

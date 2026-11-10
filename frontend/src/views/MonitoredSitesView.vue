@@ -317,12 +317,16 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 .site-name-link {
   font-size: 15px;
   font-weight: 700;
   color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .site-name-link:hover {
@@ -332,6 +336,9 @@ onMounted(() => {
 .site-url {
   font-size: 11px;
   color: var(--text-subtle);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .delete-btn {
