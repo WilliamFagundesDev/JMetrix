@@ -15,7 +15,7 @@
     "setup": "powershell -ExecutionPolicy Bypass -File ./setup.ps1",
     "pack:win": "electron-packager . JMETRIX --platform=win32 --arch=x64 --out=dist-electron --overwrite --prune=false --no-asar --icon=electron/icon.ico",
     "build:app": "npm run build:frontend && npm run pack:win",
-    "dist:installer": "npm run build:frontend && electron-builder --win"
+    "dist:installer": "npm run build:frontend && npx electron-builder --win"
   },
   "build": {
     "appId": "com.jmetrix.app",
