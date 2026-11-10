@@ -34,6 +34,17 @@
             <span class="val font-mono path-text">{{ environment.jmeter?.path || 'Não configurado' }}</span>
           </div>
           <p class="env-msg">{{ environment.jmeter?.message }}</p>
+          <div v-if="!environment.jmeter?.available" style="margin-top: 12px;">
+            <BaseButton
+              size="sm"
+              variant="primary"
+              :loading="isInstallingJMeter"
+              @click="installJMeterAutomatically"
+            >
+              <template #icon><Download :size="14" /></template>
+              {{ t('settings.btnInstallJMeter') }}
+            </BaseButton>
+          </div>
         </div>
 
         <!-- Java Runtime Status Box -->
@@ -219,7 +230,7 @@ import { useApi } from '../composables/useApi.js';
 import { useToast } from '../composables/useToast.js';
 import { useI18n } from '../composables/useI18n.js';
 import BaseButton from '../components/common/BaseButton.vue';
-import { Server, RefreshCw, Save, CheckCircle2, Play } from 'lucide-vue-next';
+import { Server, RefreshCw, Save, CheckCircle2, Play, Download } from 'lucide-vue-next';
 
 const api = useApi();
 const toast = useToast();
@@ -229,6 +240,7 @@ const environment = ref(null);
 const isCheckingEnv = ref(false);
 const isSaving = ref(false);
 const isRunningJUnit = ref(false);
+const isInstallingJMeter = ref(false);
 const junitResults = ref(null);
 
 const settings = ref({
@@ -267,6 +279,25 @@ async function verifyEnvironment() {
     toast.error('Falha na verificação', err.message);
   } finally {
     isCheckingEnv.value = false;
+  }
+}
+
+async function installJMeterAutomatically() {
+  try {
+    isInstallingJMeter.value = true;
+    toast.info('Instalação em Andamento', t('settings.installingJMeter') || 'Baixando e configurando Apache JMeter 5.6.3...');
+    const res = await api.post('/settings/install-jmeter');
+    if (res.environment) {
+      environment.value = res.environment;
+    }
+    if (res.path) {
+      settings.value.jmeter_custom_path = res.path;
+    }
+    toast.success('JMeter Configurado', res.message || 'Apache JMeter 5.6.3 pronto para uso!');
+  } catch (err) {
+    toast.error('Erro na Instalação', err.message);
+  } finally {
+    isInstallingJMeter.value = false;
   }
 }
 

@@ -263,7 +263,9 @@ const dictionaries = {
       fieldMaxCrawlerHint: 'Evita crawling indiscriminado no domínio alvo (Padrão: 25)',
       fieldApdexT: 'Limiar de Satisfação APDEX T (Milissegundos)',
       fieldApdexTHint: 'Respostas abaixo de T são "Satisfeitas", até 4T são "Tolerantes" (Padrão: 500ms)',
-      btnSave: 'Salvar e Aplicar Configurações'
+      btnSave: 'Salvar e Aplicar Configurações',
+      btnInstallJMeter: 'Instalar Apache JMeter Automaticamente',
+      installingJMeter: 'Baixando e configurando Apache JMeter 5.6.3...'
     },
     engineWidget: {
       runningTitle: 'Motor Apache JMeter em Execução',
@@ -560,7 +562,9 @@ const dictionaries = {
       fieldMaxCrawlerHint: 'Prevents indiscriminate crawling of the target domain (Default: 25)',
       fieldApdexT: 'APDEX Satisfaction Threshold T (Milliseconds)',
       fieldApdexTHint: 'Responses under T are "Satisfied", up to 4T are "Tolerating" (Default: 500ms)',
-      btnSave: 'Save & Apply Settings'
+      btnSave: 'Save & Apply Settings',
+      btnInstallJMeter: 'Install Apache JMeter Automatically',
+      installingJMeter: 'Downloading and configuring Apache JMeter 5.6.3...'
     },
     engineWidget: {
       runningTitle: 'Apache JMeter Engine Running',
@@ -857,7 +861,9 @@ const dictionaries = {
       fieldMaxCrawlerHint: 'Evita el crawling indiscriminado en el dominio objetivo (Predeterminado: 25)',
       fieldApdexT: 'Umbral de Satisfacción APDEX T (Milisegundos)',
       fieldApdexTHint: 'Respuestas por debajo de T son "Satisfechas", hasta 4T son "Tolerantes" (Predeterminado: 500ms)',
-      btnSave: 'Guardar y Aplicar Configuraciones'
+      btnSave: 'Guardar y Aplicar Configuraciones',
+      btnInstallJMeter: 'Instalar Apache JMeter Automáticamente',
+      installingJMeter: 'Descargando y configurando Apache JMeter 5.6.3...'
     },
     engineWidget: {
       runningTitle: 'Motor Apache JMeter en Ejecución',

@@ -75,6 +75,25 @@ export class SettingsController {
   }
 
   /**
+   * Automatically download and provision Apache JMeter
+   */
+  static async installJMeter(req, res) {
+    try {
+      const result = await EnvironmentService.installJMeter();
+      const envStatus = await EnvironmentService.getEnvironmentStatus();
+      return res.json({
+        ...result,
+        environment: envStatus
+      });
+    } catch (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message || 'Falha ao instalar o Apache JMeter.'
+      });
+    }
+  }
+
+  /**
    * Run JUnit 5 test suite on demand and return structured results
    */
   static async runJUnitTests(req, res) {
@@ -85,7 +104,7 @@ export class SettingsController {
       const jarPath = path.join(testsDir, 'lib', 'junit-platform-console-standalone-1.10.2.jar');
       const buildDir = path.join(testsDir, 'build', 'classes');
 
-      let javaBin = 'java';
+      let javaBin = EnvironmentService.getJavaBin() || 'java';
       const jdkCandidates = [
         'C:\\Users\\willi\\.jdks\\jbr-21.0.11\\bin\\java.exe',
         process.env.JAVA_HOME ? path.join(process.env.JAVA_HOME, 'bin', 'java.exe') : null

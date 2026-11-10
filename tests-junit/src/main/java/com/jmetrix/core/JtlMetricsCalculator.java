@@ -171,3 +171,4 @@ public class JtlMetricsCalculator {
         return sortedList.get(index);
     }
 }
+

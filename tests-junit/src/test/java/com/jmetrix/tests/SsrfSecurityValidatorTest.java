@@ -89,3 +89,4 @@ public class SsrfSecurityValidatorTest {
         assertFalse(SsrfSecurityValidator.validate("   ").isValid());
     }
 }
+

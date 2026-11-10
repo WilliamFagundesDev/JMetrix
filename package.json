@@ -12,6 +12,7 @@
     "start:frontend": "cd frontend && npm run dev",
     "build:frontend": "cd frontend && npm run build",
     "test:junit": "run-junit.bat",
+    "setup": "powershell -ExecutionPolicy Bypass -File ./setup.ps1",
     "pack:win": "electron-packager . JMETRIX --platform=win32 --arch=x64 --out=dist-electron --overwrite --prune=false --no-asar --icon=electron/icon.ico",
     "build:app": "npm run build:frontend && npm run pack:win"
   },

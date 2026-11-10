@@ -88,3 +88,4 @@ public class JmxPlanValidatorTest {
         assertTrue(result.message.contains("XML"));
     }
 }
+

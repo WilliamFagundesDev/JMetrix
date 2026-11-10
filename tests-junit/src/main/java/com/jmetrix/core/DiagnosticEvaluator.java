@@ -87,3 +87,4 @@ public class DiagnosticEvaluator {
         return new DiagnosticResult(score, status, positives, warnings, problems, recommendations);
     }
 }
+

@@ -127,7 +127,7 @@ export class JMeterExecutor {
     };
 
     if (fs.existsSync(jarPath)) {
-      spawnCmd = 'java';
+      spawnCmd = EnvironmentService.getJavaBin() || 'java';
       spawnArgs = ['-jar', jarPath, ...args];
     } else if (process.platform === 'win32' && jmeterPath.endsWith('.bat')) {
       spawnOpts.shell = true;

@@ -8,6 +8,34 @@ Disponível como **Aplicação Desktop Nativa (Electron)** e como **Aplicação 
 
 ---
 
+## 🛠️ Instalação Rápida Automatizada (One-Click Setup)
+
+Para instalar **todas as dependências do projeto**, baixar o **Apache JMeter 5.6.3**, configurar o ambiente e compilar o executável de forma 100% automatizada:
+
+### Método 1: Duplo Clique (Recomendado)
+Dê um duplo clique no arquivo:
+```
+SETUP.bat
+```
+
+### Método 2: Via Terminal
+```bash
+npm run setup
+```
+*(ou execute no PowerShell: `powershell -ExecutionPolicy Bypass -File .\setup.ps1`)*
+
+### O que o instalador automatizado faz por você:
+1. **Verificação do Node.js e NPM:** Valida versões mínimas suportadas.
+2. **Detecção e Provisão do Java Runtime:** Detecta sua instalação do Java (JDK/JRE 17+) ou baixa automaticamente um JRE 21 portátil do Eclipse Temurin.
+3. **Download e Configuração do Apache JMeter 5.6.3:** Baixa os binários oficiais do Apache Archive/CDN, descompacta em `%LOCALAPPDATA%\Programs\apache-jmeter-5.6.3` e valida os executáveis `jmeter.bat` e `ApacheJMeter.jar`.
+4. **Instalação das Dependências NPM:** Executa `npm install` na raiz, no `backend/` e no `frontend/`.
+5. **Compilação do Frontend SPA:** Executa o build de produção do Vue 3 (`frontend/dist`).
+6. **Compilação e Execução da Suíte JUnit 5:** Valida todos os 26 testes unitários e de integração em Java.
+7. **Empacotamento do Executável Desktop:** Gera o executável standalone `dist-electron\JMETRIX-win32-x64\JMETRIX.exe`.
+8. **Criação de Atalhos:** Cria um atalho direto na sua Área de Trabalho com o ícone oficial do JMETRIX e pergunta se você deseja iniciar o aplicativo imediatamente!
+
+---
+
 ## ⚡ Como Rodar o Executável Desktop (Backend + Frontend Juntos)
 
 Você pode iniciar o JMETRIX em modo desktop com um único clique de três formas:
@@ -98,6 +126,7 @@ npm start
 
 | Comando | Descrição |
 | :--- | :--- |
+| `npm run setup` | Executa o instalador automatizado completo (`setup.ps1` / `SETUP.bat`) |
 | `npm start` / `npm run electron` | Inicia o executável desktop Electron conectando backend e frontend |
 | `npm run test:junit` | Executa a suíte completa de 26 testes automatizados com JUnit 5 (Java) |
 | `npm run build:app` | Compila o frontend e empacota o executável `JMETRIX.exe` para Windows x64 |

@@ -45,3 +45,4 @@ public class DiagnosticEvaluatorTest {
         assertTrue(result.recommendations.stream().anyMatch(r -> r.toLowerCase().contains("cache") || r.toLowerCase().contains("banco")));
     }
 }
+
