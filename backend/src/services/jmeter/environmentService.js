@@ -32,14 +32,16 @@ export class EnvironmentService {
 
     // 3. Check known project tools or user JDKs
     const home = os.homedir();
+    const resourcesPath = process.env.RESOURCES_PATH || '';
     const candidates = [
+      resourcesPath ? path.join(resourcesPath, 'tools', 'jre21', 'bin', 'java.exe') : null,
       path.resolve(process.cwd(), 'tools', 'jre21', 'bin', 'java.exe'),
       path.resolve(process.cwd(), '..', 'tools', 'jre21', 'bin', 'java.exe'),
       path.join(home, '.jdks', 'jbr-21.0.11', 'bin', 'java.exe'),
       'C:\\Program Files\\Java\\jdk-21\\bin\\java.exe',
       'C:\\Program Files\\Eclipse Adoptium\\jdk-21\\bin\\java.exe',
       'C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath\\java.exe'
-    ];
+    ].filter(Boolean);
 
     for (const cand of candidates) {
       if (fs.existsSync(cand)) return cand;
@@ -76,7 +78,9 @@ export class EnvironmentService {
 
     // 3. Check local project tools and AppData download paths
     const localAppData = process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local');
+    const resourcesPath = process.env.RESOURCES_PATH || '';
     const knownCandidates = [
+      resourcesPath ? path.join(resourcesPath, 'tools', 'apache-jmeter-5.6.3', 'bin', 'jmeter.bat') : null,
       path.resolve(process.cwd(), 'tools', 'apache-jmeter-5.6.3', 'bin', 'jmeter.bat'),
       path.resolve(process.cwd(), '..', 'tools', 'apache-jmeter-5.6.3', 'bin', 'jmeter.bat'),
       path.join(localAppData, 'Programs', 'apache-jmeter-5.6.3', 'bin', 'jmeter.bat'),
@@ -88,7 +92,7 @@ export class EnvironmentService {
       '/opt/apache-jmeter-5.6.3/bin/jmeter',
       '/opt/apache-jmeter/bin/jmeter',
       '/usr/local/bin/jmeter'
-    ];
+    ].filter(Boolean);
 
     for (const cand of knownCandidates) {
       if (fs.existsSync(cand)) {

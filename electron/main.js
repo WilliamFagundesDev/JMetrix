@@ -50,7 +50,8 @@ async function startBackendIfNeeded() {
     PORT: String(BACKEND_PORT),
     STORAGE_DIR: app.isPackaged
       ? path.join(app.getPath('userData'), 'storage')
-      : path.join(rootDir, 'backend', 'storage')
+      : path.join(rootDir, 'backend', 'storage'),
+    RESOURCES_PATH: process.resourcesPath || ''
   };
 
   if (app.isPackaged) {

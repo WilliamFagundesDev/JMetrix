@@ -14,7 +14,52 @@
     "test:junit": "run-junit.bat",
     "setup": "powershell -ExecutionPolicy Bypass -File ./setup.ps1",
     "pack:win": "electron-packager . JMETRIX --platform=win32 --arch=x64 --out=dist-electron --overwrite --prune=false --no-asar --icon=electron/icon.ico",
-    "build:app": "npm run build:frontend && npm run pack:win"
+    "build:app": "npm run build:frontend && npm run pack:win",
+    "dist:installer": "npm run build:frontend && electron-builder --win"
+  },
+  "build": {
+    "appId": "com.jmetrix.app",
+    "productName": "JMETRIX",
+    "asar": false,
+    "directories": {
+      "output": "dist-installer"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "electron/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "JMETRIX",
+      "installerIcon": "electron/icon.ico",
+      "uninstallerIcon": "electron/icon.ico",
+      "artifactName": "JMETRIX-Setup-${version}.${ext}"
+    },
+    "extraResources": [
+      {
+        "from": "tools",
+        "to": "tools",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "files": [
+      "electron/**/*",
+      "backend/**/*",
+      "frontend/dist/**/*",
+      "package.json"
+    ]
   },
   "keywords": [
     "jmetrix",
@@ -29,6 +74,7 @@
   "license": "MIT",
   "devDependencies": {
     "@electron/packager": "^20.3.0",
-    "electron": "^45.2.3"
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0"
   }
 }
