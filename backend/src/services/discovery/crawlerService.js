@@ -1,7 +1,13 @@
 import axios from 'axios';
+import https from 'https';
 import * as cheerio from 'cheerio';
 import { SSRFValidator } from './ssrfValidator.js';
 import db from '../../database/db.js';
+
+// HTTPS Agent that permits self-signed or development certificates (common in testing staging/dev environments)
+const insecureHttpsAgent = new https.Agent({
+  rejectUnauthorized: false
+});
 
 export class CrawlerService {
   /**
@@ -75,6 +81,7 @@ export class CrawlerService {
         maxRedirects: 3,
         responseType: 'arraybuffer',
         validateStatus: () => true, // accept all HTTP codes
+        httpsAgent: insecureHttpsAgent,
         headers: {
           'User-Agent': 'JMETRIX-Performance-Agent/1.0 (+https://jmetrix.local)'
         }
@@ -172,6 +179,7 @@ export class CrawlerService {
           maxRedirects: 2,
           responseType: 'arraybuffer',
           validateStatus: () => true,
+          httpsAgent: insecureHttpsAgent,
           headers: {
             'User-Agent': 'JMETRIX-Performance-Agent/1.0 (+https://jmetrix.local)'
           }
@@ -257,7 +265,7 @@ export class CrawlerService {
   static async checkRobotsTxt(origin) {
     try {
       const robotsUrl = `${origin}/robots.txt`;
-      const res = await axios.get(robotsUrl, { timeout: 3000, validateStatus: () => true });
+      const res = await axios.get(robotsUrl, { timeout: 3000, validateStatus: () => true, httpsAgent: insecureHttpsAgent });
       if (res.status === 200 && typeof res.data === 'string') {
         const lines = res.data.split('\n');
         const disallowed = [];
@@ -276,7 +284,7 @@ export class CrawlerService {
   static async checkSitemapXml(origin) {
     try {
       const sitemapUrl = `${origin}/sitemap.xml`;
-      const res = await axios.get(sitemapUrl, { timeout: 3000, validateStatus: () => true });
+      const res = await axios.get(sitemapUrl, { timeout: 3000, validateStatus: () => true, httpsAgent: insecureHttpsAgent });
       if (res.status === 200 && typeof res.data === 'string') {
         const matches = [...res.data.matchAll(/<loc>(.*?)<\/loc>/g)];
         const urls = matches.map(m => m[1].trim()).filter(u => u.startsWith(origin));

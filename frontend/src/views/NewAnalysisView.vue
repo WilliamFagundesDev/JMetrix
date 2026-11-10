@@ -685,8 +685,10 @@ onMounted(async () => {
   subscribe('test:completed', (data) => {
     if (createdTest.value && data.testId === createdTest.value.id) {
       isExecuting.value = false;
+      const completedId = createdTest.value.id;
+      createdTest.value = null;
       toast.success('Teste Concluído!', 'Redirecionando para o dashboard de resultados...');
-      router.push(`/test/${createdTest.value.id}`);
+      router.push(`/test/${completedId}`);
     }
   });
 

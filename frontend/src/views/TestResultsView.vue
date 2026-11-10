@@ -325,7 +325,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useApi } from '../composables/useApi.js';
 import { useToast } from '../composables/useToast.js';
@@ -376,15 +376,26 @@ const activeChartTab = ref('latency');
 const isEndpointModalOpen = ref(false);
 const activeEndpoint = ref(null);
 
-async function loadTest() {
+async function loadTest(testId) {
   try {
-    const id = route.params.id;
+    const id = testId || route.params.id;
+    if (!id) return;
     const data = await api.get(`/tests/${id}`);
     test.value = data;
   } catch (err) {
     toast.error('Erro ao carregar teste', err.message);
   }
 }
+
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId) {
+      test.value = null;
+      loadTest(newId);
+    }
+  }
+);
 
 function formatDate(isoStr) {
   if (!isoStr) return '-';

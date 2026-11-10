@@ -32,11 +32,9 @@
       </transition>
 
       <main class="page-content">
-        <router-view v-slot="{ Component }">
-          <transition name="page-fade">
-            <keep-alive>
-              <component :is="Component" />
-            </keep-alive>
+        <router-view v-slot="{ Component, route }">
+          <transition name="page-fade" mode="out-in">
+            <component :is="Component" :key="route.fullPath" />
           </transition>
         </router-view>
       </main>
