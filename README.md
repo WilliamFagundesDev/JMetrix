@@ -8,7 +8,24 @@ Disponível como **Aplicação Desktop Nativa (Electron)** e como **Aplicação 
 
 ---
 
-## 🛠️ Instalação Rápida Automatizada (One-Click Setup)
+## 💿 Instalador Executável Oficial do Windows (`JMETRIX-Setup.exe`)
+
+Se você quer mandar apenas um arquivo executável para qualquer pessoa instalar sem precisar de Node.js, Java ou JMeter previamente configurados:
+
+### O Arquivo Gerado:
+```
+dist-installer\JMETRIX-Setup-1.0.0.exe
+```
+
+### Recursos do Instalador:
+- 🚀 **100% Embutido:** Já contém o Apache JMeter 5.6.3 e o Java 21 (JRE LTS portátil) embutidos no pacote.
+- 📂 **Escolha do Local de Instalação:** O usuário pode escolher em qual pasta deseja instalar (ex: `C:\Arquivos de Programas\JMETRIX` ou pasta personalizada).
+- 🖥️ **Atalhos Automáticos:** Cria ícone na Área de Trabalho e no Menu Iniciar do Windows.
+- 🔄 **Como Gerar Novamente:** `npm run dist:installer`
+
+---
+
+## 🛠️ Instalação Rápida Automatizada (One-Click Setup via Código)
 
 Para instalar **todas as dependências do projeto**, baixar o **Apache JMeter 5.6.3**, configurar o ambiente e compilar o executável de forma 100% automatizada:
 
