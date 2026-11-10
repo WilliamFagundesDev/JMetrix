@@ -37,3 +37,4 @@ if (-not (Test-Path "$jreTarget\bin\java.exe")) {
 Write-Host "[Tools] JRE 21 verificado em: $jreTarget" -ForegroundColor Green
 
 Write-Host "[Tools] Todos os binarios embutidos foram preparados com sucesso!" -ForegroundColor Green
+
