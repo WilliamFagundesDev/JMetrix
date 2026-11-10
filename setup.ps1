@@ -1,5 +1,5 @@
-﻿# =====================================================================
-# JMETRIX PLATFORM — INSTALADOR E CONFIGURADOR AUTOMATIZADO
+# =====================================================================
+# JMETRIX PLATFORM - INSTALADOR E CONFIGURADOR AUTOMATIZADO
 # Arquitetura: Node.js (Express), Vue 3, Apache JMeter 5.6.3, Electron, JUnit 5
 # =====================================================================
 
@@ -51,7 +51,7 @@ Write-Host @"
 | |__| | |  | | |____   | |  | | \ \ _| |_| . \ 
  \____/|_|  |_|______|  |_|  |_|  \_\_____|_|\_\
  
-  JMETRIX — PLATAFORMA INTELIGENTE DE TESTES DE PERFORMANCE
+  JMETRIX - PLATAFORMA INTELIGENTE DE TESTES DE PERFORMANCE
   Instalador e Configurador Automatizado (One-Click Setup)
 =====================================================================
 "@ -ForegroundColor Cyan
@@ -329,7 +329,7 @@ try {
     $shortcut = $wsh.CreateShortcut($shortcutFile)
     $shortcut.TargetPath = $shortcutTarget
     $shortcut.WorkingDirectory = $projectRoot
-    $shortcut.Description = "JMETRIX — Plataforma Inteligente de Testes de Performance"
+    $shortcut.Description = "JMETRIX - Plataforma Inteligente de Testes de Performance"
     if (Test-Path $iconFile) {
         $shortcut.IconLocation = "$iconFile,0"
     }
@@ -350,7 +350,7 @@ Write-Host "  -> Java Runtime (JRE):   OPERACIONAL" -ForegroundColor Green
 Write-Host "  -> Apache JMeter 5.6.3:  INSTALADO ($jmeterBat)" -ForegroundColor Green
 Write-Host "  -> Dependencias NPM:     100% INSTALADAS" -ForegroundColor Green
 Write-Host "  -> Frontend SPA:         COMPILADO (frontend/dist/)" -ForegroundColor Green
-Write-Host "  -> Suite JUnit 5:        26 TESTES COMPILADOS & VALIDADOS" -ForegroundColor Green
+Write-Host "  -> Suite JUnit 5:        26 TESTES COMPILADOS E VALIDADOS" -ForegroundColor Green
 Write-Host "  -> Executavel Desktop:   dist-electron\JMETRIX-win32-x64\JMETRIX.exe" -ForegroundColor Green
 Write-Host "  -> Inicializador Rapido: JMETRIX.bat e Atalho na Area de Trabalho" -ForegroundColor Green
 Write-Host ""

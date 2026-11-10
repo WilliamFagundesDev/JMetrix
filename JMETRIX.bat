@@ -1,7 +1,8 @@
 @echo off
-title JMETRIX — Test. Measure. Dominate.
+setlocal
+title JMETRIX - Test. Measure. Dominate.
 echo ========================================================
-echo    JMETRIX — Plataforma Inteligente de Testes
+echo    JMETRIX - Plataforma Inteligente de Testes
 echo    Motor Apache JMeter integrado + Interface Electron
 echo ========================================================
 echo.
@@ -15,4 +16,3 @@ if exist "%~dp0dist-electron\JMETRIX-win32-x64\JMETRIX.exe" (
 echo [JMETRIX] Iniciando via Electron em modo desenvolvimento...
 cd /d "%~dp0"
 call npm start
-

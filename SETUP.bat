@@ -1,10 +1,10 @@
 @echo off
-setlocal EnableDelayedExpansion
-title JMETRIX — Instalador e Configurador Automatizado
+setlocal
+title JMETRIX - Instalador e Configurador Automatizado
 cd /d "%~dp0"
 
 echo ========================================================
-echo    JMETRIX — PLATAFORMA INTELIGENTE DE TESTES
+echo    JMETRIX - PLATAFORMA INTELIGENTE DE TESTES
 echo    Instalador e Configurador Automatizado
 echo ========================================================
 echo.
