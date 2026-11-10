@@ -6,6 +6,7 @@ const router = Router();
 router.get('/', SettingsController.getSettings);
 router.post('/', SettingsController.updateSettings);
 router.get('/environment', SettingsController.verifyEnvironment);
+router.get('/junit-tests', SettingsController.runJUnitTests);
 
 export default router;
 

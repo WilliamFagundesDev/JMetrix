@@ -99,10 +99,37 @@ npm start
 | Comando | Descrição |
 | :--- | :--- |
 | `npm start` / `npm run electron` | Inicia o executável desktop Electron conectando backend e frontend |
+| `npm run test:junit` | Executa a suíte completa de 26 testes automatizados com JUnit 5 (Java) |
 | `npm run build:app` | Compila o frontend e empacota o executável `JMETRIX.exe` para Windows x64 |
 | `npm run start:backend` | Inicia somente o servidor backend na porta 3001 |
 | `npm run start:frontend` | Inicia o frontend em modo de desenvolvimento Vite |
 | `npm run build:frontend` | Compila os arquivos de produção do Vue 3 em `frontend/dist` |
+
+---
+
+## ☕ Suíte de Testes com JUnit 5 (Java)
+
+O projeto conta com uma suíte de testes de unidade e integração escrita em **Java** com **JUnit 5 (Jupiter)** localizada no diretório `tests-junit/`.
+
+### Como Executar os Testes JUnit:
+
+1. **Via Script de 1 Clique (.bat):**
+   Dê um duplo clique em `run-junit.bat` na raiz do projeto.
+2. **Via Terminal:**
+   ```bash
+   npm run test:junit
+   ```
+3. **Pela Interface Web/Desktop:**
+   Acesse a tela de **Configurações** no JMETRIX e clique no botão **"Executar Testes JUnit 5"** para visualizar a árvore de testes em tempo real.
+4. **Pela sua IDE Java Favorita (IntelliJ IDEA / VS Code / Eclipse):**
+   Abra a pasta `tests-junit/` como projeto Maven através do arquivo `pom.xml`.
+
+### Cobertura da Suíte JUnit:
+- **Segurança Anti-SSRF:** Bloqueio de localhost, loopback, redes privadas RFC 1918 e metadados de nuvem.
+- **Cálculo Estatístico & APDEX:** Validação matemática dos percentis (P50, P90, P95, P99), média, vazão e fórmula de satisfação do usuário APDEX ($T=500\text{ms}$).
+- **Validação de Planos JMX:** Inspeção estrutural da árvore XML do Apache JMeter e tetos operacionais de VUs e tempo.
+- **Motor de Diagnóstico:** Testes de pontuação técnica (Score 0-100) e geração de recomendações.
+- **Integração com a API REST:** Chamadas HTTP automáticas contra a API Node.js validando endpoints e respostas.
 
 ---
 

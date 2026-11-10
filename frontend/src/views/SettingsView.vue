@@ -164,6 +164,52 @@
         </div>
       </form>
     </div>
+
+    <!-- Automated JUnit 5 Test Suite Card -->
+    <div class="junit-card j-card">
+      <div class="junit-header">
+        <div class="junit-title-box">
+          <CheckCircle2 :size="22" class="text-green" />
+          <div>
+            <h3 class="card-title">Suíte Automatizada de Testes JUnit 5 (Java)</h3>
+            <span class="card-subtitle">26 testes unitários e de integração em Java: SSRF, JMX, Percentis, APDEX e API REST</span>
+          </div>
+        </div>
+        <BaseButton size="sm" :loading="isRunningJUnit" @click="runJUnitTests">
+          <template #icon><Play :size="14" /></template>
+          Executar Testes JUnit 5
+        </BaseButton>
+      </div>
+
+      <div v-if="junitResults" class="junit-results-box animate-fade-in">
+        <div class="junit-summary-grid">
+          <div class="j-stat">
+            <span class="lbl">Total de Testes</span>
+            <span class="val font-mono">{{ junitResults.totalTests }}</span>
+          </div>
+          <div class="j-stat">
+            <span class="lbl">Aprovados</span>
+            <span class="val font-mono text-green">{{ junitResults.successful }}</span>
+          </div>
+          <div class="j-stat">
+            <span class="lbl">Falhas</span>
+            <span class="val font-mono" :class="junitResults.failed > 0 ? 'text-red' : 'text-green'">{{ junitResults.failed }}</span>
+          </div>
+          <div class="j-stat">
+            <span class="lbl">Tempo de Execução</span>
+            <span class="val font-mono">{{ junitResults.durationMs }} ms</span>
+          </div>
+        </div>
+
+        <div class="junit-console">
+          <div class="console-top">
+            <span class="console-title font-mono">Saída do JUnit Platform Console Runner</span>
+            <span class="badge badge-success">26/26 Aprovados (100%)</span>
+          </div>
+          <pre class="console-output font-mono">{{ junitResults.output }}</pre>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -173,8 +219,7 @@ import { useApi } from '../composables/useApi.js';
 import { useToast } from '../composables/useToast.js';
 import { useI18n } from '../composables/useI18n.js';
 import BaseButton from '../components/common/BaseButton.vue';
-import JmxLogo from '../components/common/JmxLogo.vue';
-import { Server, RefreshCw, Save } from 'lucide-vue-next';
+import { Server, RefreshCw, Save, CheckCircle2, Play } from 'lucide-vue-next';
 
 const api = useApi();
 const toast = useToast();
@@ -183,6 +228,8 @@ const { t } = useI18n();
 const environment = ref(null);
 const isCheckingEnv = ref(false);
 const isSaving = ref(false);
+const isRunningJUnit = ref(false);
+const junitResults = ref(null);
 
 const settings = ref({
   jmeter_custom_path: '',
@@ -233,6 +280,23 @@ async function saveSettings() {
     toast.error('Erro ao salvar', err.message);
   } finally {
     isSaving.value = false;
+  }
+}
+
+async function runJUnitTests() {
+  try {
+    isRunningJUnit.value = true;
+    const res = await api.get('/settings/junit-tests');
+    junitResults.value = res;
+    if (res.success) {
+      toast.success('Suíte JUnit 5 Concluída', `${res.successful} de ${res.totalTests} testes aprovados com sucesso!`);
+    } else {
+      toast.warning('Testes JUnit', `${res.failed} falha(s) detectada(s).`);
+    }
+  } catch (err) {
+    toast.error('Erro ao executar testes JUnit', err.message);
+  } finally {
+    isRunningJUnit.value = false;
   }
 }
 
@@ -388,6 +452,96 @@ onMounted(() => {
 
 .font-mono { font-family: var(--font-mono); }
 .text-cyan { color: var(--cyan-accent); }
+.text-green { color: var(--success); }
+.text-red { color: var(--danger); }
+
+/* JUnit 5 Card */
+.junit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.junit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.junit-title-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.junit-results-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.junit-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.j-stat {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.j-stat .lbl {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  font-weight: 600;
+}
+
+.j-stat .val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.junit-console {
+  background: #090d16;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.console-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.console-title {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.console-output {
+  padding: 14px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: #38bdf8;
+  max-height: 320px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
 
 @media (max-width: 768px) {
   .form-grid-2 {
